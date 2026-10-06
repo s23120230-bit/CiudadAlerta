@@ -92,7 +92,7 @@ fun CiudadAlertaUi() {
                         vm = vm,
                         id = backStackEntry.arguments!!.getInt("id"),
                         onVolver = { navController.popBackStack() }
-                    )    
+                    )
                 }
             }
         }
