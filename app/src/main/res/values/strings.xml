@@ -1,3 +1,27 @@
 <resources>
-    <string name="app_name">CiudadAlerta</string>
+    <string name="app_name">Ciudad Alerta</string>
+    <string name="menu_mis_reportes">Mis reportes</string>
+    <string name="menu_nuevo">Nuevo reporte</string>
+    <string name="menu_ajustes">Ajustes</string>
+    <string name="sin_reportes">Aún no hay reportes</string>
+    <string name="campo_titulo">Título</string>
+    <string name="campo_descripcion">Descripción</string>
+    <string name="campo_categoria">Categoría</string>
+    <string name="campo_hora">Hora del incidente</string>
+    <string name="cat_bache">Bache</string>
+    <string name="cat_luz">Falla de luz</string>
+    <string name="cat_basura">Basura</string>
+    <string name="urgente">Es urgente</string>
+    <string name="elegir_hora">Elegir hora</string>
+    <string name="guardar">Guardar reporte</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="volver">Volver</string>
+    <string name="estatus">Estatus</string>
+    <string name="est_recibido">Recibido</string>
+    <string name="est_proceso">En proceso</string>
+    <string name="est_resuelto">Resuelto</string>
+    <string name="idioma">Idioma</string>
+    <string name="idioma_es">Español</string>
+    <string name="idioma_en">English</string>
 </resources>

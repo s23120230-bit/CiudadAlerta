@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Ciudad Alerta</string>
+    <string name="menu_mis_reportes">My reports</string>
+    <string name="menu_nuevo">New report</string>
+    <string name="menu_ajustes">Settings</string>
+    <string name="sin_reportes">No reports yet</string>
+    <string name="campo_titulo">Title</string>
+    <string name="campo_descripcion">Description</string>
+    <string name="campo_categoria">Category</string>
+    <string name="campo_hora">Incident time</string>
+    <string name="cat_bache">Pothole</string>
+    <string name="cat_luz">Light failure</string>
+    <string name="cat_basura">Garbage</string>
+    <string name="urgente">It is urgent</string>
+    <string name="elegir_hora">Pick a time</string>
+    <string name="guardar">Save report</string>
+    <string name="aceptar">OK</string>
+    <string name="cancelar">Cancel</string>
+    <string name="volver">Back</string>
+    <string name="estatus">Status</string>
+    <string name="est_recibido">Received</string>
+    <string name="est_proceso">In progress</string>
+    <string name="est_resuelto">Resolved</string>
+    <string name="idioma">Language</string>
+    <string name="idioma_es">Español</string>
+    <string name="idioma_en">English</string>
+</resources>
