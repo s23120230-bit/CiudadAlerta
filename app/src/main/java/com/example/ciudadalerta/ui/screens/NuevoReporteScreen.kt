@@ -26,7 +26,10 @@ fun NuevoReporteScreen(vm: ReporteViewModel, onGuardado: () -> Unit) {
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Text(stringResource(R.string.menu_nuevo), style = MaterialTheme.typography.headlineSmall)
+        Text(
+            stringResource(if (form.editando) R.string.titulo_editar else R.string.menu_nuevo),
+            style = MaterialTheme.typography.headlineSmall
+        )
 
         OutlinedTextField(
             value = form.titulo,
@@ -79,7 +82,7 @@ fun NuevoReporteScreen(vm: ReporteViewModel, onGuardado: () -> Unit) {
             enabled = form.titulo.isNotBlank(),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(stringResource(R.string.guardar))
+            Text(stringResource(if (form.editando) R.string.guardar_cambios else R.string.guardar))
         }
     }
 

@@ -1,8 +1,14 @@
 package com.example.ciudadalerta.ui
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -33,6 +39,7 @@ fun CiudadAlertaUi() {
     val compacto = LocalConfiguration.current.screenWidthDp < 600
 
     val irA: (Destino) -> Unit = { d ->
+        if (d == Destino.Nuevo) vm.nuevo()
         navController.navigate(d.ruta) {
             popUpTo(navController.graph.findStartDestination().id) { saveState = true }
             launchSingleTop = true
@@ -81,7 +88,15 @@ fun CiudadAlertaUi() {
                     )
                 }
                 composable(Destino.Nuevo.ruta) {
-                    NuevoReporteScreen(vm = vm, onGuardado = { irA(Destino.MisReportes) })
+                    NuevoReporteScreen(
+                        vm = vm,
+                        onGuardado = {
+                            navController.navigate(Destino.MisReportes.ruta) {
+                                popUpTo(navController.graph.findStartDestination().id)
+                                launchSingleTop = true
+                            }
+                        }
+                    )
                 }
                 composable(Destino.Ajustes.ruta) { AjustesScreen() }
                 composable(
@@ -91,7 +106,8 @@ fun CiudadAlertaUi() {
                     DetalleScreen(
                         vm = vm,
                         id = backStackEntry.arguments!!.getInt("id"),
-                        onVolver = { navController.popBackStack() }
+                        onVolver = { navController.popBackStack() },
+                        onEditar = { navController.navigate(Destino.Nuevo.ruta) }
                     )
                 }
             }
