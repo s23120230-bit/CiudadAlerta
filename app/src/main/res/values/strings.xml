@@ -24,4 +24,10 @@
     <string name="idioma">Idioma</string>
     <string name="idioma_es">Español</string>
     <string name="idioma_en">English</string>
+    <string name="titulo_editar">Editar reporte</string>
+    <string name="guardar_cambios">Guardar cambios</string>
+    <string name="editar">Editar</string>
+    <string name="eliminar">Eliminar</string>
+    <string name="confirmar_eliminar">¿Eliminar este reporte? Esta acción no se puede deshacer.</string>
+    <string name="historial">Historial de estatus</string>
 </resources>

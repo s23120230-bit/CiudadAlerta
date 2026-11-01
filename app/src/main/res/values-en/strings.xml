@@ -24,4 +24,10 @@
     <string name="idioma">Language</string>
     <string name="idioma_es">Español</string>
     <string name="idioma_en">English</string>
+    <string name="titulo_editar">Edit report</string>
+    <string name="guardar_cambios">Save changes</string>
+    <string name="editar">Edit</string>
+    <string name="eliminar">Delete</string>
+    <string name="confirmar_eliminar">Delete this report? This action cannot be undone.</string>
+    <string name="historial">Status history</string>
 </resources>
