@@ -6,5 +6,13 @@ import com.example.ciudadalerta.data.repository.ReporteRepository
 
 class CiudadAlertaApp : Application() {
     private val database by lazy { AppDatabase.crear(this) }
-    val repository by lazy { ReporteRepository(database.reporteDao()) }
+
+    val repository by lazy {
+        ReporteRepository(
+            reporteDao = database.reporteDao(),
+            multimediaDao = database.multimediaDao(),
+            notificacionDao = database.notificacionDao(),
+            historialDao = database.historialDao()
+        )
+    }
 }
