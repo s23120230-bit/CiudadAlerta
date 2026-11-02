@@ -10,7 +10,7 @@ object ApiClient {
 
     // MockAPI:      "https://TU_ID.mockapi.io/api/v1/"
     // API local:    "http://10.0.2.2:5000/api/"   (10.0.2.2 = tu computadora vista desde el emulador)
-    const val BASE_URL = "https://TU_ID.mockapi.io/api/v1/"
+    const val BASE_URL = "https://6ae7f19756b2ee1e5440a8f9.mockapi.io/api/v1/"
 
     private val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
