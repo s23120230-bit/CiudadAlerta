@@ -26,6 +26,8 @@ data class FormularioState(
     val editando: Boolean = false
 )
 
+enum class EstadoSync { INACTIVO, SINCRONIZANDO, OK, ERROR }
+
 class ReporteViewModel(private val repo: ReporteRepository) : ViewModel() {
 
     val reportes: StateFlow<List<ReporteEntity>> = repo.obtenerReportes()
@@ -34,8 +36,15 @@ class ReporteViewModel(private val repo: ReporteRepository) : ViewModel() {
     var form by mutableStateOf(FormularioState())
         private set
 
+    var estadoSync by mutableStateOf(EstadoSync.INACTIVO)
+        private set
+
     // Reporte original cuando se está editando (null = reporte nuevo)
     private var original: ReporteEntity? = null
+
+    init {
+        sincronizar()
+    }
 
     fun onTitulo(v: String) { form = form.copy(titulo = v) }
     fun onDescripcion(v: String) { form = form.copy(descripcion = v) }
@@ -89,14 +98,27 @@ class ReporteViewModel(private val repo: ReporteRepository) : ViewModel() {
                 )
             }
             nuevo()
-            onListo()
+            onListo()                     // la interfaz no espera a la red
+            repo.sincronizarPendientes() // intenta subir al servidor
         }
     }
 
     fun eliminar(id: Int, onListo: () -> Unit) {
         viewModelScope.launch {
-            repo.eliminarReporte(id)
+            val remoteId = repo.eliminarLocal(id)
             onListo()
+            repo.eliminarRemoto(remoteId)
+        }
+    }
+
+    // Sube los pendientes y luego descarga lo del servidor
+    fun sincronizar() {
+        if (estadoSync == EstadoSync.SINCRONIZANDO) return
+        viewModelScope.launch {
+            estadoSync = EstadoSync.SINCRONIZANDO
+            repo.sincronizarPendientes()
+            val ok = repo.recuperarDeApi()
+            estadoSync = if (ok) EstadoSync.OK else EstadoSync.ERROR
         }
     }
 
