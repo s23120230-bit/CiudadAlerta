@@ -14,6 +14,12 @@ interface ReporteDao {
     @Query("SELECT * FROM reporte WHERE id = :id")
     fun obtenerPorId(id: Int): Flow<ReporteEntity?>
 
+    @Query("SELECT * FROM reporte WHERE id = :id LIMIT 1")
+    suspend fun obtenerUno(id: Int): ReporteEntity?
+
+    @Query("SELECT * FROM reporte WHERE remote_id = :remoteId LIMIT 1")
+    suspend fun obtenerPorRemoteId(remoteId: String): ReporteEntity?
+
     @Query("SELECT * FROM reporte WHERE sincronizado = 0")
     suspend fun obtenerPendientes(): List<ReporteEntity>
 

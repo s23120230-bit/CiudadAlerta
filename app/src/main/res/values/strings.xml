@@ -30,4 +30,9 @@
     <string name="eliminar">Eliminar</string>
     <string name="confirmar_eliminar">¿Eliminar este reporte? Esta acción no se puede deshacer.</string>
     <string name="historial">Historial de estatus</string>
+    <string name="sincronizar">Sincronizar</string>
+    <string name="sincronizando">Sincronizando…</string>
+    <string name="sync_ok">Sincronizado</string>
+    <string name="sync_error">Sin conexión con el servidor</string>
+    <string name="pendiente_sync">Pendiente de sincronizar</string>
 </resources>
