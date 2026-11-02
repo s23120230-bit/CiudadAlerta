@@ -30,4 +30,9 @@
     <string name="eliminar">Delete</string>
     <string name="confirmar_eliminar">Delete this report? This action cannot be undone.</string>
     <string name="historial">Status history</string>
+    <string name="sincronizar">Sync</string>
+    <string name="sincronizando">Syncing…</string>
+    <string name="sync_ok">Synced</string>
+    <string name="sync_error">Cannot reach the server</string>
+    <string name="pendiente_sync">Pending sync</string>
 </resources>
