@@ -2,6 +2,7 @@ package com.example.ciudadalerta
 
 import android.app.Application
 import com.example.ciudadalerta.data.local.AppDatabase
+import com.example.ciudadalerta.data.remote.ApiClient
 import com.example.ciudadalerta.data.repository.ReporteRepository
 
 class CiudadAlertaApp : Application() {
@@ -12,7 +13,8 @@ class CiudadAlertaApp : Application() {
             reporteDao = database.reporteDao(),
             multimediaDao = database.multimediaDao(),
             notificacionDao = database.notificacionDao(),
-            historialDao = database.historialDao()
+            historialDao = database.historialDao(),
+            api = ApiClient.reporteApi
         )
     }
 }
