@@ -13,7 +13,7 @@ import androidx.room.RoomDatabase
         NotificacionEntity::class,
         HistorialEstatusEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

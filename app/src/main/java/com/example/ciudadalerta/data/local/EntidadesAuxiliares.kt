@@ -12,6 +12,8 @@ data class UsuarioEntity(
     val nombre: String,
     val correo: String,
     val idioma: String = "es",
+    @ColumnInfo(name = "password_hash") val passwordHash: String = "",
+    val salt: String = "",
     @ColumnInfo(name = "fecha_registro") val fechaRegistro: Long = System.currentTimeMillis()
 )
 
