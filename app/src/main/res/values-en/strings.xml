@@ -51,4 +51,15 @@
     <string name="err_password_corta">The password must be at least 6 characters</string>
     <string name="err_correo_existe">That email is already registered</string>
     <string name="err_credenciales">Wrong email or password</string>
+    <string name="subtitulo_app">Citizen reports in your community</string>
+    <string name="sin_reportes_desc">Your submitted reports will appear here. Create one when you spot an issue.</string>
+    <string name="crear_reporte">Create report</string>
+    <string name="filtro_todos">All</string>
+    <string name="marcar_urgente_desc">High priority for critical issues</string>
+    <string name="detalle_titulo">Report details</string>
+    <string name="info_general">Information</string>
+    <string name="fecha_creacion">Report date</string>
+    <string name="app_version">Version 1.0.0</string>
+    <string name="ajustes_cuenta">Profile &amp; Account</string>
+    <string name="ajustes_app">Application</string>
 </resources>

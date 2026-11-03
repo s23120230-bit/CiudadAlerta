@@ -51,4 +51,15 @@
     <string name="err_password_corta">La contraseña debe tener al menos 6 caracteres</string>
     <string name="err_correo_existe">Ese correo ya está registrado</string>
     <string name="err_credenciales">Correo o contraseña incorrectos</string>
+    <string name="subtitulo_app">Reportes ciudadanos en tu comunidad</string>
+    <string name="sin_reportes_desc">Tus reportes registrados aparecerán aquí. Crea uno nuevo cuando detectes una incidencia.</string>
+    <string name="crear_reporte">Crear reporte</string>
+    <string name="filtro_todos">Todos</string>
+    <string name="marcar_urgente_desc">Prioridad alta para incidentes críticos</string>
+    <string name="detalle_titulo">Detalle del reporte</string>
+    <string name="info_general">Información</string>
+    <string name="fecha_creacion">Fecha de reporte</string>
+    <string name="app_version">Versión 1.0.0</string>
+    <string name="ajustes_cuenta">Perfil y Cuenta</string>
+    <string name="ajustes_app">Aplicación</string>
 </resources>
