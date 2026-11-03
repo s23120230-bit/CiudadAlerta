@@ -7,6 +7,7 @@ import com.example.ciudadalerta.data.local.NotificacionDao
 import com.example.ciudadalerta.data.local.NotificacionEntity
 import com.example.ciudadalerta.data.local.ReporteDao
 import com.example.ciudadalerta.data.local.ReporteEntity
+import com.example.ciudadalerta.data.local.SesionManager
 import com.example.ciudadalerta.data.remote.ReporteApi
 import com.example.ciudadalerta.data.remote.actualizadoCon
 import com.example.ciudadalerta.data.remote.toDto
@@ -18,7 +19,8 @@ class ReporteRepository(
     private val multimediaDao: MultimediaDao,
     private val notificacionDao: NotificacionDao,
     private val historialDao: HistorialDao,
-    private val api: ReporteApi
+    private val api: ReporteApi,
+    private val sesion: SesionManager
 ) {
 
     // ---------- Lecturas (la interfaz siempre lee de la base local) ----------
@@ -31,7 +33,7 @@ class ReporteRepository(
 
     // ---------- Escrituras locales ----------
     suspend fun crearReporte(reporte: ReporteEntity): Long {
-        val id = reporteDao.insertar(reporte)
+        val id = reporteDao.insertar(reporte.copy(usuarioId = sesion.usuarioActual()))
         historialDao.insertar(
             HistorialEstatusEntity(reporteId = id.toInt(), estatus = reporte.estatus)
         )
