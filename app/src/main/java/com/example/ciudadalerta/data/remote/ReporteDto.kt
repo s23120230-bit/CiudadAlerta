@@ -1,6 +1,6 @@
 package com.example.ciudadalerta.data.remote
 
-// Modelo JSON de un reporte, opcional
+// Modelo JSON de un reporte
 data class ReporteDto(
     val id: String? = null,
     val titulo: String? = null,

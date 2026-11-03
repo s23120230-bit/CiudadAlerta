@@ -18,8 +18,12 @@ sealed class Destino(
     data object Ajustes : Destino("ajustes", R.string.menu_ajustes, Icons.Default.Settings)
 
     companion object {
-        val menu = listOf(MisReportes, Nuevo, Ajustes)
+        // Se arma al pedirla, no al cargar la clase, para que ningún elemento salga null
+        val menu: List<Destino>
+            get() = listOf(MisReportes, Nuevo, Ajustes)
     }
 }
 
 const val RUTA_DETALLE = "detalle"
+const val RUTA_LOGIN = "login"
+const val RUTA_REGISTRO = "registro"

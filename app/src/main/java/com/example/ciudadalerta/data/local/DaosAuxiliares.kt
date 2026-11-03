@@ -8,11 +8,14 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UsuarioDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     suspend fun insertar(usuario: UsuarioEntity): Long
 
     @Query("SELECT * FROM usuario WHERE correo = :correo LIMIT 1")
     suspend fun obtenerPorCorreo(correo: String): UsuarioEntity?
+
+    @Query("SELECT * FROM usuario WHERE id = :id LIMIT 1")
+    suspend fun obtenerPorId(id: Int): UsuarioEntity?
 }
 
 @Dao
