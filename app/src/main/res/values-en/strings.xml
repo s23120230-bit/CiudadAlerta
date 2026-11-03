@@ -35,4 +35,20 @@
     <string name="sync_ok">Synced</string>
     <string name="sync_error">Cannot reach the server</string>
     <string name="pendiente_sync">Pending sync</string>
+    <string name="login_titulo">Sign in</string>
+    <string name="registro_titulo">Create account</string>
+    <string name="campo_nombre">Name</string>
+    <string name="campo_correo">Email</string>
+    <string name="campo_password">Password</string>
+    <string name="entrar">Sign in</string>
+    <string name="registrarme">Sign up</string>
+    <string name="ir_registro">No account? Sign up</string>
+    <string name="ir_login">Already have an account? Sign in</string>
+    <string name="cerrar_sesion">Sign out</string>
+    <string name="sesion_de">Signed in as %1$s</string>
+    <string name="err_campos_vacios">Fill in all the fields</string>
+    <string name="err_correo_invalido">The email is not valid</string>
+    <string name="err_password_corta">The password must be at least 6 characters</string>
+    <string name="err_correo_existe">That email is already registered</string>
+    <string name="err_credenciales">Wrong email or password</string>
 </resources>
