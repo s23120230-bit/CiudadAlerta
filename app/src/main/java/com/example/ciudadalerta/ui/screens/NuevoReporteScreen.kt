@@ -302,6 +302,16 @@ fun NuevoReporteScreen(vm: ReporteViewModel, onGuardado: () -> Unit) {
             }
         }
 
+        // ===== NUEVO: Foto y ubicación (RF03 y RF04) =====
+        SeccionFotoUbicacion(
+            fotoPath = form.fotoPath,
+            latitud = form.latitud,
+            longitud = form.longitud,
+            onFoto = vm::onFoto,
+            onUbicacion = vm::onUbicacion
+        )
+        // ===== FIN de lo nuevo =====
+
         Spacer(Modifier.height(8.dp))
 
         // Botón principal de guardado
