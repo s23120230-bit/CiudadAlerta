@@ -62,4 +62,16 @@
     <string name="app_version">Versión 1.0.0</string>
     <string name="ajustes_cuenta">Perfil y Cuenta</string>
     <string name="ajustes_app">Aplicación</string>
+
+    <string name="seccion_foto">Foto</string>
+    <string name="foto_galeria">Galería</string>
+    <string name="foto_camara">Cámara</string>
+    <string name="quitar">Quitar</string>
+    <string name="procesando_foto">Procesando foto…</string>
+    <string name="campo_ubicacion">Ubicación</string>
+    <string name="usar_ubicacion">Usar mi ubicación actual</string>
+    <string name="buscando_ubicacion">Buscando ubicación…</string>
+    <string name="ubic_permiso_denegado">Sin permiso de ubicación. Actívalo en los ajustes del teléfono.</string>
+    <string name="ubic_no_disponible">No se pudo obtener la ubicación. Revisa que el GPS esté activado.</string>
+    <string name="ver_en_mapa">Ver en mapa</string>
 </resources>

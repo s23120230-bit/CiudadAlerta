@@ -62,4 +62,16 @@
     <string name="app_version">Version 1.0.0</string>
     <string name="ajustes_cuenta">Profile &amp; Account</string>
     <string name="ajustes_app">Application</string>
+
+    <string name="seccion_foto">Photo</string>
+    <string name="foto_galeria">Gallery</string>
+    <string name="foto_camara">Camera</string>
+    <string name="quitar">Remove</string>
+    <string name="procesando_foto">Processing photo…</string>
+    <string name="campo_ubicacion">Location</string>
+    <string name="usar_ubicacion">Use my current location</string>
+    <string name="buscando_ubicacion">Getting location…</string>
+    <string name="ubic_permiso_denegado">Location permission denied. Turn it on in the phone settings.</string>
+    <string name="ubic_no_disponible">Could not get the location. Check that GPS is on.</string>
+    <string name="ver_en_mapa">View on map</string>
 </resources>

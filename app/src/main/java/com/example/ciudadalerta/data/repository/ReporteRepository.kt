@@ -13,6 +13,8 @@ import com.example.ciudadalerta.data.remote.actualizadoCon
 import com.example.ciudadalerta.data.remote.toDto
 import com.example.ciudadalerta.data.remote.toEntity
 import kotlinx.coroutines.CancellationException
+import com.example.ciudadalerta.data.local.MultimediaEntity
+import java.io.File
 
 class ReporteRepository(
     private val reporteDao: ReporteDao,
@@ -47,7 +49,8 @@ class ReporteRepository(
     // Borra en local y devuelve el id remoto (si lo tenía) para borrarlo también en la API
     suspend fun eliminarLocal(id: Int): String? {
         val remoteId = reporteDao.obtenerUno(id)?.remoteId
-        reporteDao.eliminarPorId(id) // multimedia, notificaciones e historial se borran en cascada
+        multimediaDao.obtenerLista(id).forEach { it.uriLocal?.let { ruta -> File(ruta).delete() } }
+        reporteDao.eliminarPorId(id) // las filas de multimedia, notificaciones e historial se borran en cascada
         return remoteId
     }
 
@@ -64,6 +67,23 @@ class ReporteRepository(
     }
 
     suspend fun marcarNotificacionLeida(id: Int) = notificacionDao.marcarLeida(id)
+
+    //  Foto del reporte
+    suspend fun primeraFoto(reporteId: Int): String? =
+        multimediaDao.obtenerLista(reporteId).firstOrNull()?.uriLocal
+
+    // Reemplaza la foto del reporte (null = sin foto) y borra los archivos viejos
+    suspend fun guardarFoto(reporteId: Int, ruta: String?) {
+        multimediaDao.obtenerLista(reporteId)
+            .filter { it.uriLocal != ruta }
+            .forEach { it.uriLocal?.let { vieja -> File(vieja).delete() } }
+        multimediaDao.eliminarPorReporte(reporteId)
+        if (ruta != null) {
+            multimediaDao.insertar(
+                MultimediaEntity(reporteId = reporteId, uriLocal = ruta, tipo = "FOTO")
+            )
+        }
+    }
 
     // ---------- Red (Retrofit) ----------
 
