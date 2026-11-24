@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 data class FormularioState(
     val titulo: String = "",
@@ -23,6 +25,9 @@ data class FormularioState(
     val categoria: Categoria = Categoria.BACHE,
     val urgente: Boolean = false,
     val hora: String = "",
+    val fotoPath: String? = null,
+    val latitud: Double? = null,
+    val longitud: Double? = null,
     val editando: Boolean = false
 )
 
@@ -42,6 +47,8 @@ class ReporteViewModel(private val repo: ReporteRepository) : ViewModel() {
     // Reporte original cuando se está editando (null = reporte nuevo)
     private var original: ReporteEntity? = null
 
+    private var fotoOriginal: String? = null
+
     init {
         sincronizar()
     }
@@ -52,40 +59,63 @@ class ReporteViewModel(private val repo: ReporteRepository) : ViewModel() {
     fun onUrgente(v: Boolean) { form = form.copy(urgente = v) }
     fun onHora(v: String) { form = form.copy(hora = v) }
 
+    fun onFoto(ruta: String?) { form = form.copy(fotoPath = ruta) }
+
+    fun onUbicacion(lat: Double?, lon: Double?) { form = form.copy(latitud = lat, longitud = lon) }
+
+    fun foto(id: Int): Flow<String?> =
+        repo.multimedia(id).map { lista -> lista.firstOrNull()?.uriLocal }
+
     fun reporte(id: Int) = repo.obtenerReporte(id)
     fun historial(id: Int) = repo.historial(id)
 
     fun nuevo() {
         original = null
+        fotoOriginal = null
         form = FormularioState()
     }
 
     fun editar(r: ReporteEntity) {
         original = r
+        fotoOriginal = null
         form = FormularioState(
             titulo = r.titulo,
             descripcion = r.descripcion,
             categoria = Categoria.entries.firstOrNull { it.name == r.categoria } ?: Categoria.BACHE,
             urgente = r.urgente,
             hora = r.hora,
+            latitud = r.latitud,
+            longitud = r.longitud,
             editando = true
         )
+        // La foto vive en otra tabla, se carga aparte
+        viewModelScope.launch {
+            val ruta = repo.primeraFoto(r.id)
+            if (original?.id == r.id) {
+                fotoOriginal = ruta
+                form = form.copy(fotoPath = ruta)
+            }
+        }
     }
 
     fun guardar(onListo: () -> Unit) {
         val f = form
         val base = original
+        val fotoAnterior = fotoOriginal
         viewModelScope.launch {
             if (base == null) {
-                repo.crearReporte(
+                val idNuevo = repo.crearReporte(
                     ReporteEntity(
                         titulo = f.titulo.trim(),
                         descripcion = f.descripcion.trim(),
                         categoria = f.categoria.name,
                         hora = f.hora,
+                        latitud = f.latitud,
+                        longitud = f.longitud,
                         urgente = f.urgente
                     )
                 )
+                repo.guardarFoto(idNuevo.toInt(), f.fotoPath)
             } else {
                 repo.actualizarReporte(
                     base.copy(
@@ -93,12 +123,15 @@ class ReporteViewModel(private val repo: ReporteRepository) : ViewModel() {
                         descripcion = f.descripcion.trim(),
                         categoria = f.categoria.name,
                         hora = f.hora,
+                        latitud = f.latitud,
+                        longitud = f.longitud,
                         urgente = f.urgente
                     )
                 )
+                if (f.fotoPath != fotoAnterior) repo.guardarFoto(base.id, f.fotoPath)
             }
             nuevo()
-            onListo()                     // la interfaz no espera a la red
+            onListo()                    // la interfaz no espera a la red
             repo.sincronizarPendientes() // intenta subir al servidor
         }
     }

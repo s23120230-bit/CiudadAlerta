@@ -67,6 +67,8 @@ fun DetalleScreen(
         .collectAsStateWithLifecycle(initialValue = null)
     val historial by remember(id) { vm.historial(id) }
         .collectAsStateWithLifecycle(initialValue = emptyList())
+    val foto by remember(id) { vm.foto(id) }
+        .collectAsStateWithLifecycle(initialValue = null)
     var confirmar by remember { mutableStateOf(false) }
     val formato = remember { DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT) }
     val formatoFecha = remember { DateFormat.getDateInstance(DateFormat.MEDIUM) }
@@ -193,6 +195,12 @@ fun DetalleScreen(
                         text = r.descripcion.ifBlank { "Sin descripción adicional proporcionada." },
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurface
+                    )
+                    SeccionFotoUbicacionDetalle(
+                        fotoPath = foto,
+                        latitud = r.latitud,
+                        longitud = r.longitud,
+                        titulo = r.titulo
                     )
                 }
             }
