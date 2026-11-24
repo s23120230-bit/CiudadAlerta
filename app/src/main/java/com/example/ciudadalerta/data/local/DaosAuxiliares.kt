@@ -26,6 +26,12 @@ interface MultimediaDao {
     @Query("SELECT * FROM multimedia WHERE reporte_id = :reporteId")
     fun obtenerPorReporte(reporteId: Int): Flow<List<MultimediaEntity>>
 
+    @Query("SELECT * FROM multimedia WHERE reporte_id = :reporteId")
+    suspend fun obtenerLista(reporteId: Int): List<MultimediaEntity>
+
+    @Query("DELETE FROM multimedia WHERE reporte_id = :reporteId")
+    suspend fun eliminarPorReporte(reporteId: Int)
+
     @Query("DELETE FROM multimedia WHERE id = :id")
     suspend fun eliminar(id: Int)
 }
