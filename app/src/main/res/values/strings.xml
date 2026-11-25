@@ -51,6 +51,7 @@
     <string name="err_password_corta">La contraseña debe tener al menos 6 caracteres</string>
     <string name="err_correo_existe">Ese correo ya está registrado</string>
     <string name="err_credenciales">Correo o contraseña incorrectos</string>
+    <string name="err_desconocido">Ocurrió un error inesperado</string>
     <string name="subtitulo_app">Reportes ciudadanos en tu comunidad</string>
     <string name="sin_reportes_desc">Tus reportes registrados aparecerán aquí. Crea uno nuevo cuando detectes una incidencia.</string>
     <string name="crear_reporte">Crear reporte</string>

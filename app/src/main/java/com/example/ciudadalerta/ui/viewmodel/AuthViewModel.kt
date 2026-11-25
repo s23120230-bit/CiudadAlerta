@@ -15,7 +15,8 @@ import kotlinx.coroutines.launch
 
 class AuthViewModel(private val repo: AuthRepository) : ViewModel() {
 
-    var sesionIniciada by mutableStateOf(repo.usuarioActualId() != -1)
+    // Si el ID no está vacío, la sesión está iniciada
+    var sesionIniciada by mutableStateOf(repo.usuarioActualId().isNotEmpty())
         private set
 
     var nombreUsuario by mutableStateOf("")
@@ -32,21 +33,11 @@ class AuthViewModel(private val repo: AuthRepository) : ViewModel() {
     }
 
     private fun cargarNombre() {
-        val id = repo.usuarioActualId()
-        if (id == -1) {
+        if (repo.usuarioActualId().isEmpty()) {
             nombreUsuario = ""
             return
         }
-        viewModelScope.launch {
-            val usuario = repo.usuario(id)
-            if (usuario == null) {
-
-                repo.cerrarSesion()
-                sesionIniciada = false
-            } else {
-                nombreUsuario = usuario.nombre
-            }
-        }
+        nombreUsuario = repo.usuarioActualNombre()
     }
 
     fun limpiarError() {

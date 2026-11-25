@@ -13,5 +13,6 @@ fun mensajeError(error: ErrorAuth): String = stringResource(
         ErrorAuth.PASSWORD_CORTA -> R.string.err_password_corta
         ErrorAuth.CORREO_EXISTE -> R.string.err_correo_existe
         ErrorAuth.CREDENCIALES_INCORRECTAS -> R.string.err_credenciales
+        ErrorAuth.ERROR_DESCONOCIDO -> R.string.err_desconocido
     }
 )

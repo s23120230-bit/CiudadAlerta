@@ -51,6 +51,7 @@
     <string name="err_password_corta">The password must be at least 6 characters</string>
     <string name="err_correo_existe">That email is already registered</string>
     <string name="err_credenciales">Wrong email or password</string>
+    <string name="err_desconocido">An unexpected error occurred</string>
     <string name="subtitulo_app">Citizen reports in your community</string>
     <string name="sin_reportes_desc">Your submitted reports will appear here. Create one when you spot an issue.</string>
     <string name="crear_reporte">Create report</string>

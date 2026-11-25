@@ -1,75 +1,76 @@
 package com.example.ciudadalerta.data.repository
 
-import android.util.Base64
 import android.util.Patterns
-import com.example.ciudadalerta.data.local.SesionManager
-import com.example.ciudadalerta.data.local.UsuarioDao
-import com.example.ciudadalerta.data.local.UsuarioEntity
-import java.security.MessageDigest
-import java.security.SecureRandom
-import java.util.Locale
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.UserProfileChangeRequest
+import kotlinx.coroutines.tasks.await
 
 enum class ErrorAuth {
     CAMPOS_VACIOS,
     CORREO_INVALIDO,
     PASSWORD_CORTA,
     CORREO_EXISTE,
-    CREDENCIALES_INCORRECTAS
+    CREDENCIALES_INCORRECTAS,
+    ERROR_DESCONOCIDO
 }
 
-class AuthRepository(
-    private val usuarioDao: UsuarioDao,
-    private val sesion: SesionManager
-) {
+class AuthRepository {
 
-    // Devuelve null si todo salió bien, o el motivo del error
+    // Instancia de Firebase Auth
+    private val auth = FirebaseAuth.getInstance()
+
     suspend fun registrar(nombre: String, correo: String, password: String): ErrorAuth? {
         val n = nombre.trim()
         val c = correo.trim().lowercase()
+
+        // Validaciones locales rápidas
         if (n.isEmpty() || c.isEmpty() || password.isEmpty()) return ErrorAuth.CAMPOS_VACIOS
         if (!Patterns.EMAIL_ADDRESS.matcher(c).matches()) return ErrorAuth.CORREO_INVALIDO
         if (password.length < 6) return ErrorAuth.PASSWORD_CORTA
-        if (usuarioDao.obtenerPorCorreo(c) != null) return ErrorAuth.CORREO_EXISTE
 
-        val salt = nuevaSal()
-        val id = usuarioDao.insertar(
-            UsuarioEntity(
-                nombre = n,
-                correo = c,
-                idioma = Locale.getDefault().language,
-                passwordHash = hash(password, salt),
-                salt = salt
-            )
-        )
-        sesion.guardar(id.toInt())
-        return null
+        return try {
+            // 1. Creamos el usuario en Firebase
+            val result = auth.createUserWithEmailAndPassword(c, password).await()
+            val user = result.user
+
+            // 2. Le asignamos el nombre al perfil del usuario
+            if (user != null) {
+                val profileUpdates = UserProfileChangeRequest.Builder()
+                    .setDisplayName(n)
+                    .build()
+                user.updateProfile(profileUpdates).await()
+            }
+            null // Todo salió bien
+        } catch (e: FirebaseAuthUserCollisionException) {
+            ErrorAuth.CORREO_EXISTE // El correo ya está registrado
+        } catch (e: Exception) {
+            android.util.Log.e("AuthRepository", "Error al registrar en Firebase", e)
+            ErrorAuth.ERROR_DESCONOCIDO
+        }
     }
 
     suspend fun iniciarSesion(correo: String, password: String): ErrorAuth? {
         val c = correo.trim().lowercase()
         if (c.isEmpty() || password.isEmpty()) return ErrorAuth.CAMPOS_VACIOS
-        val usuario = usuarioDao.obtenerPorCorreo(c) ?: return ErrorAuth.CREDENCIALES_INCORRECTAS
-        if (hash(password, usuario.salt) != usuario.passwordHash) {
-            return ErrorAuth.CREDENCIALES_INCORRECTAS
+
+        return try {
+            // Firebase verifica las credenciales
+            auth.signInWithEmailAndPassword(c, password).await()
+            null // Todo salió bien
+        } catch (e: Exception) {
+            android.util.Log.e("AuthRepository", "Error al iniciar sesión en Firebase", e)
+            ErrorAuth.CREDENCIALES_INCORRECTAS
         }
-        sesion.guardar(usuario.id)
-        return null
     }
 
-    fun cerrarSesion() = sesion.cerrar()
-
-    fun usuarioActualId(): Int = sesion.usuarioActual()
-
-    suspend fun usuario(id: Int): UsuarioEntity? = usuarioDao.obtenerPorId(id)
-
-    private fun nuevaSal(): String {
-        val bytes = ByteArray(16)
-        SecureRandom().nextBytes(bytes)
-        return Base64.encodeToString(bytes, Base64.NO_WRAP)
+    fun cerrarSesion() {
+        auth.signOut()
     }
 
-    private fun hash(password: String, salt: String): String {
-        val bytes = MessageDigest.getInstance("SHA-256").digest((salt + password).toByteArray())
-        return bytes.joinToString("") { "%02x".format(it) }
-    }
+    // Ahora devuelve un String en lugar de un Int
+    fun usuarioActualId(): String = auth.currentUser?.uid ?: ""
+
+    // Obtenemos el nombre directamente de Firebase
+    fun usuarioActualNombre(): String = auth.currentUser?.displayName ?: "Usuario"
 }
