@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -74,4 +76,14 @@ dependencies {
 
     // Ubicación (GPS)
     implementation(libs.play.services.location)
+
+
+    // 1. Importa el BoM de Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+
+    // 2. Agrega la librería de Cloud Firestore (la que de los reportes)
+    implementation("com.google.firebase:firebase-firestore")
+
+    // Firebase Authentication
+    implementation("com.google.firebase:firebase-auth")
 }

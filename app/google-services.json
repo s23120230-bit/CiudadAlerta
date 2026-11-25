@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "130001090764",
+    "project_id": "ciudadalerta-417af",
+    "storage_bucket": "ciudadalerta-417af.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:130001090764:android:f826fea3914fd6aa8f6a69",
+        "android_client_info": {
+          "package_name": "com.example.ciudadalerta"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClfPUXr9levkRGqyWpq8NZKe_Nh4vMZXg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
