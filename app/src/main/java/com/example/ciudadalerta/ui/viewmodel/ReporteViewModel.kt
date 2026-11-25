@@ -34,8 +34,13 @@ data class FormularioState(
 enum class EstadoSync { INACTIVO, SINCRONIZANDO, OK, ERROR }
 
 class ReporteViewModel(private val repo: ReporteRepository) : ViewModel() {
-
     val reportes: StateFlow<List<ReporteEntity>> = repo.obtenerReportes()
+        .map { listaCompleta ->
+            // Esto se ejecuta cada vez que hay un cambio.
+            // Aquí lee el ID real del usuario en ese momento.
+            val idActual = repo.usuarioActualId()
+            listaCompleta.filter { it.usuarioId == idActual }
+        }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     var form by mutableStateOf(FormularioState())
@@ -150,7 +155,7 @@ class ReporteViewModel(private val repo: ReporteRepository) : ViewModel() {
         viewModelScope.launch {
             estadoSync = EstadoSync.SINCRONIZANDO
             repo.sincronizarPendientes()
-            val ok = repo.recuperarDeApi()
+            val ok = repo.recuperarDeApi(repo.usuarioActualId())
             estadoSync = if (ok) EstadoSync.OK else EstadoSync.ERROR
         }
     }

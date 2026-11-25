@@ -34,4 +34,9 @@ interface ReporteDao {
 
     @Query("UPDATE reporte SET sincronizado = 1, remote_id = :remoteId WHERE id = :id")
     suspend fun marcarSincronizado(id: Int, remoteId: String)
+
+
+    @Query("SELECT * FROM reporte WHERE usuario_id = :idUsuario ORDER BY id DESC")
+    fun obtenerPorUsuario(idUsuario: String): Flow<List<ReporteEntity>>
+
 }

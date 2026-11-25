@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 data class ReporteEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "remote_id") val remoteId: String? = null,
-    @ColumnInfo(name = "usuario_id") val usuarioId: Int = 0,
+    @ColumnInfo(name = "usuario_id") val usuarioId: String = "",
     val titulo: String,
     val descripcion: String,
     val categoria: String,

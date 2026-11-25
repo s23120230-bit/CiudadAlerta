@@ -8,34 +8,43 @@ import com.example.ciudadalerta.data.local.NotificacionEntity
 import com.example.ciudadalerta.data.local.ReporteDao
 import com.example.ciudadalerta.data.local.ReporteEntity
 import com.example.ciudadalerta.data.local.SesionManager
-import com.example.ciudadalerta.data.remote.ReporteApi
-import com.example.ciudadalerta.data.remote.actualizadoCon
-import com.example.ciudadalerta.data.remote.toDto
-import com.example.ciudadalerta.data.remote.toEntity
-import kotlinx.coroutines.CancellationException
 import com.example.ciudadalerta.data.local.MultimediaEntity
+import com.example.ciudadalerta.data.remote.toMap
+import com.example.ciudadalerta.data.remote.toEntity
+import com.example.ciudadalerta.data.remote.actualizadoCon
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.tasks.await
 import java.io.File
+import com.google.firebase.auth.FirebaseAuth
 
 class ReporteRepository(
     private val reporteDao: ReporteDao,
     private val multimediaDao: MultimediaDao,
     private val notificacionDao: NotificacionDao,
     private val historialDao: HistorialDao,
-    private val api: ReporteApi,
-    private val sesion: SesionManager
+    //private val api: ReporteApi,
+    //private val sesion: SesionManager
 ) {
+
+    // Agregar la instancia de Firebase
+    private val db = FirebaseFirestore.getInstance()
 
     // ---------- Lecturas (la interfaz siempre lee de la base local) ----------
     fun obtenerReportes() = reporteDao.obtenerTodos()
+
+    fun obtenerReportesPorUsuario(idUsuario: String) = reporteDao.obtenerPorUsuario(idUsuario)
     fun obtenerReporte(id: Int) = reporteDao.obtenerPorId(id)
     fun historial(reporteId: Int) = historialDao.obtenerPorReporte(reporteId)
     fun multimedia(reporteId: Int) = multimediaDao.obtenerPorReporte(reporteId)
     fun notificaciones() = notificacionDao.obtenerTodas()
     fun notificacionesSinLeer() = notificacionDao.contarNoLeidas()
 
+    fun usuarioActualId(): String = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
     // ---------- Escrituras locales ----------
     suspend fun crearReporte(reporte: ReporteEntity): Long {
-        val id = reporteDao.insertar(reporte.copy(usuarioId = sesion.usuarioActual()))
+        val id = reporteDao.insertar(reporte.copy(usuarioId = usuarioActualId()))
         historialDao.insertar(
             HistorialEstatusEntity(reporteId = id.toInt(), estatus = reporte.estatus)
         )
@@ -52,18 +61,6 @@ class ReporteRepository(
         multimediaDao.obtenerLista(id).forEach { it.uriLocal?.let { ruta -> File(ruta).delete() } }
         reporteDao.eliminarPorId(id) // las filas de multimedia, notificaciones e historial se borran en cascada
         return remoteId
-    }
-
-    suspend fun eliminarRemoto(remoteId: String?) {
-        if (remoteId == null) return
-        try {
-            api.eliminar(remoteId)
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            // Sin conexión: el reporte se borró local, pero seguirá en el servidor
-            // (mejora pendiente: guardar las eliminaciones pendientes)
-        }
     }
 
     suspend fun marcarNotificacionLeida(id: Int) = notificacionDao.marcarLeida(id)
@@ -85,46 +82,51 @@ class ReporteRepository(
         }
     }
 
-    // ---------- Red (Retrofit) ----------
+    // ---------- Red (Firebase Firestore) ----------
 
-    // Envía a la API todos los reportes pendientes (nuevos o editados)
+    // Envía a Firebase todos los reportes pendientes (nuevos o editados)
     suspend fun sincronizarPendientes() {
         reporteDao.obtenerPendientes().forEach { sincronizarUno(it) }
     }
 
     private suspend fun sincronizarUno(local: ReporteEntity): Boolean = try {
         val remoteId = local.remoteId
-        val remoto = if (remoteId == null) {
-            api.crear(local.toDto())
+        if (remoteId == null) {
+            // Es nuevo: Firebase genera el ID automáticamente
+            val docRef = db.collection("reportes").document()
+            docRef.set(local.toMap()).await()
+            reporteDao.marcarSincronizado(local.id, docRef.id)
         } else {
-            api.actualizar(remoteId, local.toDto())
+            // Es una actualización: Sobrescribimos el documento existente
+            db.collection("reportes").document(remoteId).set(local.toMap()).await()
+            reporteDao.marcarSincronizado(local.id, remoteId)
         }
-        val idFinal = remoto.id ?: remoteId
-        if (idFinal == null) {
-            false
-        } else {
-            reporteDao.marcarSincronizado(local.id, idFinal)
-            true
-        }
+        true
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
         false
     }
 
-    // Descarga los reportes de la API y los guarda en Room (recuperar)
-    suspend fun recuperarDeApi(): Boolean = try {
-        for (dto in api.listar()) {
-            val remoteId = dto.id ?: continue
+    // Descarga los reportes de Firebase filtrados por el usuario logueado
+    suspend fun recuperarDeApi(idUsuario: String): Boolean = try {
+        val snapshot = db.collection("reportes")
+            .whereEqualTo("usuarioId", idUsuario)
+            .get()
+            .await()
+
+        for (document in snapshot.documents) {
+            val remoto = document.toEntity()
+            val remoteId = remoto.remoteId ?: continue
             val existente = reporteDao.obtenerPorRemoteId(remoteId)
+
             if (existente == null) {
-                val nuevo = dto.toEntity()
-                val idLocal = reporteDao.insertar(nuevo).toInt()
+                val idLocal = reporteDao.insertar(remoto).toInt()
                 historialDao.insertar(
-                    HistorialEstatusEntity(reporteId = idLocal, estatus = nuevo.estatus)
+                    HistorialEstatusEntity(reporteId = idLocal, estatus = remoto.estatus)
                 )
             } else if (existente.sincronizado) {
-                val actualizado = existente.actualizadoCon(dto)
+                val actualizado = existente.actualizadoCon(remoto)
                 reporteDao.actualizar(actualizado)
                 if (actualizado.estatus != existente.estatus) {
                     historialDao.insertar(
@@ -133,7 +135,7 @@ class ReporteRepository(
                     notificacionDao.insertar(
                         NotificacionEntity(
                             reporteId = existente.id,
-                            titulo = actualizado.estatus, // clave de estatus; la UI la traduce
+                            titulo = actualizado.estatus,
                             mensaje = actualizado.titulo
                         )
                     )
@@ -146,4 +148,16 @@ class ReporteRepository(
     } catch (e: Exception) {
         false
     }
+
+    suspend fun eliminarRemoto(remoteId: String?) {
+        if (remoteId == null) return
+        try {
+            db.collection("reportes").document(remoteId).delete().await()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            // Manejar error de red
+        }
+    }
+
 }
