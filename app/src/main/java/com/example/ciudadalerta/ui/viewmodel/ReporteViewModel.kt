@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 
 data class FormularioState(
     val titulo: String = "",
@@ -54,8 +56,24 @@ class ReporteViewModel(private val repo: ReporteRepository) : ViewModel() {
 
     private var fotoOriginal: String? = null
 
+    // escucha que se active cuando el usuario entre o salga
+    private val authListener = FirebaseAuth.AuthStateListener { auth: FirebaseAuth ->
+        val user: FirebaseUser? = auth.currentUser
+        if (user != null) {
+            // Si hay un usuario logueado, dispara la sincronización
+            sincronizar()
+        }
+    }
+
+    // Empieza a escuchar en cuanto se crea el ViewModel
     init {
-        sincronizar()
+        FirebaseAuth.getInstance().addAuthStateListener(authListener)
+    }
+
+    // dejar de escuchar si el ViewModel se destruye
+    override fun onCleared() {
+        super.onCleared()
+        FirebaseAuth.getInstance().removeAuthStateListener(authListener)
     }
 
     fun onTitulo(v: String) { form = form.copy(titulo = v) }

@@ -11,9 +11,13 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.ciudadalerta.CiudadAlertaApp
 import com.example.ciudadalerta.data.repository.AuthRepository
 import com.example.ciudadalerta.data.repository.ErrorAuth
+import com.example.ciudadalerta.data.repository.ReporteRepository
 import kotlinx.coroutines.launch
 
-class AuthViewModel(private val repo: AuthRepository) : ViewModel() {
+class AuthViewModel(
+    private val repo: AuthRepository,
+    private val reporteRepo: ReporteRepository
+) : ViewModel() {
 
     // Si el ID no está vacío, la sesión está iniciada
     var sesionIniciada by mutableStateOf(repo.usuarioActualId().isNotEmpty())
@@ -69,16 +73,21 @@ class AuthViewModel(private val repo: AuthRepository) : ViewModel() {
     }
 
     fun cerrarSesion() {
-        repo.cerrarSesion()
-        nombreUsuario = ""
-        sesionIniciada = false
+        viewModelScope.launch {
+            reporteRepo.limpiarBaseDeDatosLocal() // Borra la caché local
+            repo.cerrarSesion()
+            nombreUsuario = ""
+            sesionIniciada = false
+            error = null
+            cargando = false
+        }
     }
 
     companion object {
         val Factory = viewModelFactory {
             initializer {
                 val app = this[APPLICATION_KEY] as CiudadAlertaApp
-                AuthViewModel(app.authRepository)
+                AuthViewModel(app.authRepository, app.repository)
             }
         }
     }

@@ -25,4 +25,6 @@ interface ReporteRepository {
     suspend fun sincronizarPendientes()
     suspend fun recuperarDeApi(idUsuario: String): Boolean
     suspend fun eliminarRemoto(remoteId: String?)
+
+    suspend fun limpiarBaseDeDatosLocal()
 }
