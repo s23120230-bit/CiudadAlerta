@@ -35,6 +35,10 @@ class ReporteRepositoryImpl( // <-- Nombre cambiado
     override fun notificacionesSinLeer() = notificacionDao.contarNoLeidas()
     override fun usuarioActualId(): String = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
+    override suspend fun limpiarBaseDeDatosLocal() {
+        reporteDao.eliminarTodos()
+    }
+
     override suspend fun crearReporte(reporte: ReporteEntity): Long {
         val id = reporteDao.insertar(reporte.copy(usuarioId = usuarioActualId()))
         historialDao.insertar(
@@ -98,6 +102,8 @@ class ReporteRepositoryImpl( // <-- Nombre cambiado
             .get()
             .await()
 
+        val idsRemotos = snapshot.documents.mapNotNull { it.id }.toSet()
+
         for (document in snapshot.documents) {
             val remoto = document.toEntity()
             val remoteId = remoto.remoteId ?: continue
@@ -125,6 +131,17 @@ class ReporteRepositoryImpl( // <-- Nombre cambiado
                 }
             }
         }
+
+        // Borrar locales que ya no están en Firebase
+        val reportesLocales = reporteDao.obtenerListaPorUsuario(idUsuario)
+        for (local in reportesLocales) {
+            // Si el reporte ya estaba sincronizado (tiene remoteId) pero ya no está en Firebase
+            if (local.remoteId != null && !idsRemotos.contains(local.remoteId)) {
+                // Lo borramos del teléfono
+                reporteDao.eliminarPorId(local.id)
+            }
+        }
+
         true
     } catch (e: CancellationException) {
         throw e

@@ -39,4 +39,10 @@ interface ReporteDao {
     @Query("SELECT * FROM reporte WHERE usuario_id = :idUsuario ORDER BY id DESC")
     fun obtenerPorUsuario(idUsuario: String): Flow<List<ReporteEntity>>
 
+    @Query("SELECT * FROM reporte WHERE usuario_id = :idUsuario")
+    suspend fun obtenerListaPorUsuario(idUsuario: String): List<ReporteEntity>
+
+    @Query("DELETE FROM reporte")
+    suspend fun eliminarTodos()
+
 }
